@@ -188,6 +188,10 @@ module Refinery
       end
     end
 
+    def translated_to_default_locale?
+      persisted? && translations.where(:locale => Refinery::I18n.default_frontend_locale).any?
+    end
+
     # The canonical page for this particular page.
     # Consists of:
     #   * The default locale's translated slug
