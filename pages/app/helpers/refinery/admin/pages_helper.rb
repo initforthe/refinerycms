@@ -1,20 +1,6 @@
 module Refinery
   module Admin
     module PagesHelper
-      def admin_page_update_path(page)
-        if page && page.persisted?
-          nested_url = if Refinery.i18n_enabled?
-            Globalize.with_locale(Refinery::I18n.default_frontend_locale) {
-              @page.uncached_nested_url
-            }
-          else
-            @page.uncached_nested_url
-          end
-
-          refinery.admin_page_path(nested_url)
-        end
-      end
-
       def parent_id_nested_set_options(current_page)
         pages = []
         nested_set_options(::Refinery::Page, current_page) {|page| pages << page}
