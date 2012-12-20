@@ -66,6 +66,7 @@ module Refinery
     protected
 
       def after_update_positions
+        nullify_duplicate_slugs_under_the_same_parent!
         find_all_pages
         render :partial => '/refinery/admin/pages/sortable_list' and return
       end
@@ -101,6 +102,15 @@ module Refinery
 
         @valid_view_templates = Refinery::Pages.view_template_whitelist.map(&:to_s) &
                                 Refinery::Pages.valid_templates('app', 'views', '{pages,refinery/pages}', '*html*')
+      end
+
+      def nullify_duplicate_slugs_under_the_same_parent!
+        Page.includes(:translations).group(:parent_id, :slug).count(:slug).each do |(parent_id, slug), count|
+          Page.by_slug(slug).where(:parent_id => parent_id).drop(1).each do |page|
+            page.slug = nil
+            page.save
+          end if count > 1
+        end
       end
 
       def restrict_access
